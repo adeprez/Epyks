@@ -6,12 +6,14 @@ import com.deprezal.epyks.ARObject;
 import com.deprezal.epyks.ARRenderer;
 
 import org.rajawali3d.Object3D;
+import org.rajawali3d.animation.Animation;
+import org.rajawali3d.animation.IAnimationListener;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.textures.ATexture;
 import org.rajawali3d.primitives.Plane;
 
-public class ARComponent extends Plane implements ARObject {
+public class ARComponent extends Plane implements ARObject, IAnimationListener {
 	protected ARRenderer renderer;
 	protected ARContainer parent;
 	protected Material material;
@@ -109,5 +111,23 @@ public class ARComponent extends Plane implements ARObject {
 	@Override
 	public Object3D as3D() {
 		return this;
+	}
+
+	@Override
+	public void onAnimationEnd(Animation animation) {
+		renderer.remove(this);
+		animated = false;
+	}
+
+	@Override
+	public void onAnimationRepeat(Animation animation) {
+	}
+
+	@Override
+	public void onAnimationStart(Animation animation) {
+	}
+
+	@Override
+	public void onAnimationUpdate(Animation animation, double interpolatedTime) {
 	}
 }

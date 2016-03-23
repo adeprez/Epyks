@@ -9,11 +9,10 @@ import com.deprezal.epyks.ui.layout.ARLignLayout;
 
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.Animation3D;
-import org.rajawali3d.animation.IAnimationListener;
 import org.rajawali3d.animation.ScaleAnimation3D;
 import org.rajawali3d.math.vector.Vector3;
 
-public class ARMenu extends ARContainer<ARMenuItem> implements IAnimationListener {
+public class ARMenu extends ARContainer<ARMenuItem> {
 	private static final float ZOOM = 10;
 
 	public ARMenu(int count) {
@@ -62,19 +61,4 @@ public class ARMenu extends ARContainer<ARMenuItem> implements IAnimationListene
 		}
 		return false;
 	}
-
-	@Override
-	public void onAnimationEnd(Animation animation) {
-		super.removeFromRenderer();
-		animated = false;
-	}
-
-	@Override
-	public void onAnimationRepeat(Animation animation) {}
-
-	@Override
-	public void onAnimationStart(Animation animation) {}
-
-	@Override
-	public void onAnimationUpdate(Animation animation, double interpolatedTime) {}
 }
