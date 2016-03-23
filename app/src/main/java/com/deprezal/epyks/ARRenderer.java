@@ -131,11 +131,9 @@ public class ARRenderer extends VRRenderer {
 
 	@Override
 	public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep, int xPixelOffset, int yPixelOffset) {
-
 	}
 
 	@Override
 	public void onTouchEvent(MotionEvent event) {
-
 	}
 }
