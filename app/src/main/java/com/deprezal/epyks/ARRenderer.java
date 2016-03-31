@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 import com.deprezal.epyks.ui.menu.ARMenu;
 import com.google.vrtoolkit.cardboard.HeadTransform;
 
+import org.rajawali3d.Object3D;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.textures.ATexture;
@@ -21,10 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ARRenderer extends VRRenderer {
+	private final Vector3 forwardVec, headTranslation;
 	private final List<ARObject> objects;
-	private final Vector3 forwardVec;
 	private StreamingTexture cameraTexture;
 	private boolean shouldUpdateCamera;
+	private ARObject over;
 	private ARMenu menu;
 
 
@@ -32,6 +34,7 @@ public class ARRenderer extends VRRenderer {
         super(context);
 		objects = new ArrayList<>();
 		forwardVec = new Vector3();
+		headTranslation = new Vector3();
     }
 
 	public void invalidateCameraTexture() {
@@ -75,12 +78,21 @@ public class ARRenderer extends VRRenderer {
 	}
 
 	public void userAction() {
-		if (menu != null) internalOfferTask(new AFrameTask() {
-			@Override
-			protected void doTask() {
-				menu.toggle(ARRenderer.this);
-			}
-		});
+		if(over != null) {
+			internalOfferTask(new AFrameTask() {
+				@Override
+				protected void doTask() {
+					over.onAction();
+				}
+			});
+		} else if(menu != null) {
+			internalOfferTask(new AFrameTask() {
+				@Override
+				protected void doTask() {
+					menu.toggle(ARRenderer.this);
+				}
+			});
+		}
 	}
 
 	public Vector3 getInFrontOf(float distance) {
@@ -118,6 +130,42 @@ public class ARRenderer extends VRRenderer {
 		mHeadViewQuaternion.inverse();
 		forwardVec.setAll(0, 0, 1);
 		forwardVec.transform(mHeadViewQuaternion);
+
+		if(over != null) {
+			if(isLookingAtObject(over.as3D())) {
+				ARObject o = over.getLookingAt();
+				if(o != over) {
+					over.onLeave();
+					over = o;
+					over.onEnter();
+				}
+			} else {
+				over.onLeave();
+				over = null;
+			}
+		}
+		if(over == null) {
+			for(final ARObject arc : objects) {
+				if(isLookingAtObject(arc.as3D())) {
+					over = arc.getLookingAt();
+					over.onEnter();
+					break;
+				}
+			}
+		}
+	}
+
+	@Override
+	public boolean isLookingAtObject(Object3D target, float maxAngle) {
+		headTranslation.setAll(mHeadViewMatrix.getTranslation());
+		Vector3 v = target.getPosition();
+		if(target.getParent() != null) {
+			v = v.clone();
+			v.multiply(target.getParent().getModelMatrix());
+		}
+		headTranslation.subtract(v);
+		headTranslation.normalize();
+		return headTranslation.angle(forwardVec) < maxAngle;
 	}
 
 	@Override
@@ -135,5 +183,7 @@ public class ARRenderer extends VRRenderer {
 
 	@Override
 	public void onTouchEvent(MotionEvent event) {
+		if(over != null)
+			over.onAction();
 	}
 }

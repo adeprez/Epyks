@@ -1,5 +1,6 @@
 package com.deprezal.epyks.ui;
 
+import com.deprezal.epyks.ARObject;
 import com.deprezal.epyks.ui.layout.ARLayout;
 
 import java.util.ArrayList;
@@ -53,5 +54,13 @@ public class ARContainer<E extends ARComponent> extends ARComponent {
 	@Override
 	public boolean close() {
 		return !isActive() || closeComponents() && super.close();
+	}
+
+	@Override
+	public ARObject getLookingAt() {
+		for (final E e : components)
+			if (renderer.isLookingAtObject(e.as3D(), 5))
+				return e.getLookingAt();
+		return super.getLookingAt();
 	}
 }

@@ -109,6 +109,23 @@ public class ARComponent extends Plane implements ARObject, IAnimationListener {
 	}
 
 	@Override
+	public void onEnter() {
+	}
+
+	@Override
+	public void onLeave() {
+	}
+
+	@Override
+	public void onAction() {
+	}
+
+	@Override
+	public ARObject getLookingAt() {
+		return this;
+	}
+
+	@Override
 	public Object3D as3D() {
 		return this;
 	}
