@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="vr-1.1.441-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/org.rajawali3d/vr/1.1.441-SNAPSHOT/jars/libs/audio.jar!/" />
+      <root url="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/org.rajawali3d/vr/1.1.441-SNAPSHOT/res" />
+      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/org.rajawali3d/vr/1.1.441-SNAPSHOT/jars/libs/cardboard.jar!/" />
+      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/org.rajawali3d/vr/1.1.441-SNAPSHOT/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.rajawali3d/vr/1.1.441-SNAPSHOT/6207be0fb1610d591919a45adfbb12b3fa29ef52/vr-1.1.441-SNAPSHOT-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
