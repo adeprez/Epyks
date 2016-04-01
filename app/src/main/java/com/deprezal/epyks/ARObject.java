@@ -10,4 +10,5 @@ public interface ARObject {
 	void onLeave();
 	void onAction();
 	ARObject getLookingAt();
+	void stillLookingAt(int time);
 }

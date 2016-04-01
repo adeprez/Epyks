@@ -126,6 +126,10 @@ public class ARComponent extends Plane implements ARObject, IAnimationListener {
 	}
 
 	@Override
+	public void stillLookingAt(int time) {
+	}
+
+	@Override
 	public Object3D as3D() {
 		return this;
 	}

@@ -26,6 +26,7 @@ public class ARRenderer extends VRRenderer {
 	private final List<ARObject> objects;
 	private StreamingTexture cameraTexture;
 	private boolean shouldUpdateCamera;
+	private long lookingAtTime;
 	private ARObject over;
 	private ARMenu menu;
 
@@ -104,6 +105,12 @@ public class ARRenderer extends VRRenderer {
 		return forwardVec;
 	}
 
+	public void setOver(ARObject over) {
+		this.over = over;
+		over.onEnter();
+		lookingAtTime = System.currentTimeMillis();
+	}
+
     @Override
     public void initScene() {
 
@@ -136,8 +143,9 @@ public class ARRenderer extends VRRenderer {
 				ARObject o = over.getLookingAt();
 				if(o != over) {
 					over.onLeave();
-					over = o;
-					over.onEnter();
+					setOver(o);
+				} else {
+					over.stillLookingAt((int) (System.currentTimeMillis() - lookingAtTime));
 				}
 			} else {
 				over.onLeave();
@@ -147,8 +155,7 @@ public class ARRenderer extends VRRenderer {
 		if(over == null) {
 			for(final ARObject arc : objects) {
 				if(isLookingAtObject(arc.as3D())) {
-					over = arc.getLookingAt();
-					over.onEnter();
+					setOver(arc.getLookingAt());
 					break;
 				}
 			}
