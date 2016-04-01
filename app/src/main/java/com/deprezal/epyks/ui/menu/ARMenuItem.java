@@ -1,5 +1,7 @@
 package com.deprezal.epyks.ui.menu;
 
+import android.view.animation.BounceInterpolator;
+
 import com.deprezal.epyks.ui.ARLabel;
 
 public class ARMenuItem extends ARLabel {
@@ -15,11 +17,15 @@ public class ARMenuItem extends ARLabel {
 
 	@Override
 	public void onEnter() {
+		super.onEnter();
 		setColor(.5f, .5f, .9f, .85f);
+		scale(1.1, 500, new BounceInterpolator(), false);
 	}
 
 	@Override
 	public void onLeave() {
+		super.onLeave();
 		setColor(0, 0, .2f, .5f);
+		scale(.9, 500, new BounceInterpolator(), false);
 	}
 }

@@ -1,6 +1,7 @@
 package com.deprezal.epyks.ui;
 
 import android.util.Log;
+import android.view.animation.Interpolator;
 
 import com.deprezal.epyks.ARObject;
 import com.deprezal.epyks.ARRenderer;
@@ -8,18 +9,19 @@ import com.deprezal.epyks.ARRenderer;
 import org.rajawali3d.Object3D;
 import org.rajawali3d.animation.Animation;
 import org.rajawali3d.animation.IAnimationListener;
+import org.rajawali3d.animation.ScaleAnimation3D;
 import org.rajawali3d.materials.Material;
 import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.textures.ATexture;
+import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.primitives.Plane;
 
 public class ARComponent extends Plane implements ARObject, IAnimationListener {
+	protected boolean animated, active, interactingWith;
 	protected ARRenderer renderer;
 	protected ARContainer parent;
 	protected Material material;
-	protected boolean animated;
 	protected float distance;
-	private boolean active;
 
 	public ARComponent(float width, float height) {
 		super(width, height, 1, 1);
@@ -99,6 +101,29 @@ public class ARComponent extends Plane implements ARObject, IAnimationListener {
 		return mWidth;
 	}
 
+	public boolean isOver() {
+		return renderer.getOver() == this;
+	}
+
+	public boolean isInteractingWith() {
+		return interactingWith;
+	}
+
+	public ScaleAnimation3D scale(double zoom, int duration, Interpolator interpolator, boolean listen) {
+		ScaleAnimation3D anim = new ScaleAnimation3D(new Vector3(zoom, zoom, zoom));
+		if(listen) {
+			animated = true;
+			anim.registerListener(this);
+		}
+		anim.setDurationMilliseconds(duration);
+		anim.setTransformable3D(as3D());
+		anim.setRepeatMode(Animation.RepeatMode.NONE);
+		anim.setInterpolator(interpolator);
+		anim.play();
+		renderer.getCurrentScene().registerAnimation(anim);
+		return anim;
+	}
+
 	@Override
 	public void onAdded(ARRenderer renderer) {
 		this.renderer = renderer;
@@ -110,10 +135,14 @@ public class ARComponent extends Plane implements ARObject, IAnimationListener {
 
 	@Override
 	public void onEnter() {
+		interactingWith = true;
+		if(parent != null && !parent.isInteractingWith())
+			parent.onEnter();
 	}
 
 	@Override
 	public void onLeave() {
+		interactingWith = false;
 	}
 
 	@Override

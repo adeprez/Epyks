@@ -25,9 +25,9 @@ public class ARRenderer extends VRRenderer {
 	private final Vector3 forwardVec, headTranslation;
 	private final List<ARObject> objects;
 	private StreamingTexture cameraTexture;
+	private ARObject overBase, overChild;
 	private boolean shouldUpdateCamera;
 	private long lookingAtTime;
-	private ARObject over;
 	private ARMenu menu;
 
 
@@ -79,11 +79,11 @@ public class ARRenderer extends VRRenderer {
 	}
 
 	public void userAction() {
-		if(over != null) {
+		if(overChild != null) {
 			internalOfferTask(new AFrameTask() {
 				@Override
 				protected void doTask() {
-					over.onAction();
+					overChild.onAction();
 				}
 			});
 		} else if(menu != null) {
@@ -105,13 +105,21 @@ public class ARRenderer extends VRRenderer {
 		return forwardVec;
 	}
 
-	public void setOver(ARObject over) {
-		this.over = over;
-		over.onEnter();
+	public void setOver(ARObject overChild) {
+		this.overChild = overChild;
+		overChild.onEnter();
 		lookingAtTime = System.currentTimeMillis();
 	}
 
-    @Override
+	public ARObject getOver() {
+		return overChild;
+	}
+
+	public ARObject getOverBase() {
+		return overBase;
+	}
+
+	@Override
     public void initScene() {
 
 		DirectionalLight light = new DirectionalLight(0.2f, -1f, 0f);
@@ -138,27 +146,35 @@ public class ARRenderer extends VRRenderer {
 		forwardVec.setAll(0, 0, 1);
 		forwardVec.transform(mHeadViewQuaternion);
 
-		if(over != null) {
-			if(isLookingAtObject(over.as3D())) {
-				ARObject o = over.getLookingAt();
-				if(o != over) {
-					over.onLeave();
-					setOver(o);
-				} else {
-					over.stillLookingAt((int) (System.currentTimeMillis() - lookingAtTime));
-				}
+		if(overChild != null) {
+			if(isLookingAtObject(overChild.as3D())) {
+				overChild.stillLookingAt((int) (System.currentTimeMillis() - lookingAtTime));
 			} else {
-				over.onLeave();
-				over = null;
+				ARObject closeOver = overChild.getLookingAt();
+				if(closeOver == overChild) {
+					if(isLookingAtObject(closeOver.as3D())) {
+						setOver(closeOver);
+					} else {
+						overChild.onLeave();
+						overChild = null;
+					}
+				} else {
+					setOver(closeOver);
+				}
 			}
 		}
-		if(over == null) {
+		if(overChild == null) {
 			for(final ARObject arc : objects) {
 				if(isLookingAtObject(arc.as3D())) {
+					overBase = arc;
 					setOver(arc.getLookingAt());
 					break;
 				}
 			}
+		}
+		if(overChild == null && overBase != null) {
+			overBase.onLeave();
+			overBase = null;
 		}
 	}
 
@@ -190,7 +206,7 @@ public class ARRenderer extends VRRenderer {
 
 	@Override
 	public void onTouchEvent(MotionEvent event) {
-		if(over != null)
-			over.onAction();
+		if(overBase != null)
+			overBase.onAction();
 	}
 }
