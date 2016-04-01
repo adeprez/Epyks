@@ -4,10 +4,14 @@ import android.content.pm.ActivityInfo;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.Window;
 import android.view.WindowManager;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
 import org.rajawali3d.vr.VRActivity;
 
 @SuppressWarnings("deprecation")
@@ -28,9 +32,6 @@ public class ARActivity extends VRActivity implements SurfaceTexture.OnFrameAvai
         setConvertTapIntoTrigger(true);
     }
 
-    /**
-     * Called when the Cardboard trigger is pulled.
-     */
     @Override
     public void onCardboardTrigger() {
 		renderer.userAction();
@@ -44,6 +45,37 @@ public class ARActivity extends VRActivity implements SurfaceTexture.OnFrameAvai
 			camera = null;
 		}
 		super.onStop();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_1_0, this, new BaseLoaderCallback(this) {
+			@Override
+			public void onManagerConnected(int status) {
+				switch(status) {
+					case LoaderCallbackInterface.SUCCESS:
+						//TODO: have fun with openCV
+						break;
+					case LoaderCallbackInterface.INIT_FAILED:
+						Log.e("openCV", "Init Failed");
+						break;
+					case LoaderCallbackInterface.INSTALL_CANCELED:
+						Log.i("openCV", "Install Cancelled");
+						break;
+					case LoaderCallbackInterface.INCOMPATIBLE_MANAGER_VERSION:
+						Log.e("openCV", "Incompatible Version");
+						break;
+					case LoaderCallbackInterface.MARKET_ERROR:
+						Log.e("openCV", "Market Error");
+						break;
+					default:
+						Log.i("openCV", "OpenCV Manager Install");
+						super.onManagerConnected(status);
+						break;
+				}
+			}
+		});
 	}
 
 	@Override
