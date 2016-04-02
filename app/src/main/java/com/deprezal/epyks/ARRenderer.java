@@ -135,7 +135,7 @@ public class ARRenderer extends VRRenderer {
 
 		getCurrentScene().setBackgroundColor(0);
 
-		menu = new ARMenu("Hello", "World");
+		menu = new ARMenu("Hello", "World", "I'm", "A", "Menu :)");
     }
 
 	@Override
@@ -150,24 +150,16 @@ public class ARRenderer extends VRRenderer {
 			if(isLookingAtObject(overChild.as3D())) {
 				overChild.stillLookingAt((int) (System.currentTimeMillis() - lookingAtTime));
 			} else {
-				ARObject closeOver = overChild.getLookingAt();
-				if(closeOver == overChild) {
-					if(isLookingAtObject(closeOver.as3D())) {
-						setOver(closeOver);
-					} else {
-						overChild.onLeave();
-						overChild = null;
-					}
-				} else {
-					setOver(closeOver);
-				}
+				overChild.onLeave();
+				overChild = null;
 			}
 		}
 		if(overChild == null) {
 			for(final ARObject arc : objects) {
-				if(isLookingAtObject(arc.as3D())) {
+				ARObject lookingAt = arc.getLookingAt();
+				if(lookingAt != arc || isLookingAtObject(arc.as3D())) {
 					overBase = arc;
-					setOver(arc.getLookingAt());
+					setOver(lookingAt);
 					break;
 				}
 			}
